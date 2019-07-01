@@ -1,4 +1,4 @@
-# Mesh RouTer ManaGeR
+# Mesh RouTer ManaGeR (Work in Progress!)
 A commandline tool to manage several different vendor routers in AP(Access Point) mode through ssh with private key authentication and make them act close to a mesh network over an ethernet/wired backhaul, thus avoiding vendor locking yourself.
 <br>
 <br>
