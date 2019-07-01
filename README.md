@@ -29,11 +29,15 @@ This project is a work in progress but here are some of the known requirements a
 
 ### Requirements
 __Router:__
-* SSH with private key authentication <br>
+* SSH with private key authentication (rsa2048 or rsa4096) <br>
 Note: Preferably with the ability to disable user+password ssh login!
 * "nvram" commandline tool
 
 __Computer or management device:__ <br>
 Note: This tool is designed to be run from a Raspberry Pi or a Linux system
 * SSH
-* Python3 (python requirements TBD)
+* Python3
+  * confparser
+  * shlex
+  * argparse
+  * subprocess
