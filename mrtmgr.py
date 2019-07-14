@@ -153,6 +153,9 @@ if args.http_port:
 if args.https_port:
     commands.append(libmrt.webui.set_https_port(args))
 
+if args.ssh_key:
+    commands.append(libmrt.sshd.set_ssh_key(args))
+
 # Print is here for now to just see if commands get combined properly
 print(" ; ".join(commands))
 #libmrt.nvram.rt_exec(ssh_baseargs,commands)
