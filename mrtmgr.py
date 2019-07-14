@@ -126,7 +126,6 @@ commands = []
 if not args.commit and not args.dry_run:
     print('Missing the --commit or --dry-run argument at the end of the "optional" arguments.')
     exit()
-
 elif args.commit and args.dry_run:
     print('Please only use --commit or --dry-run, they cannot be used together!')
     exit()
