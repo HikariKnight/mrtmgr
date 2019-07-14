@@ -105,8 +105,13 @@ endconfig = parser.add_argument_group("End config", "Signify you are ending the 
     (This is a workaround to stop the arguments taking 1 or more option from thinking profile and IP is\
     part of its own options)")
 
-endconfig.add_argument("--for", action='store_true', help='This argument MUST be used before PROFILE,\
-    it is here to "end" the config so that any parameters using 1 or more values wont include profile and IP')
+endconfig.add_argument("--commit", action='store_true', help='This argument MUST be used before PROFILE,\
+    it is here to "end" the config so that any parameters using 1 or more values wont include profile and IP\
+    and tells mrtmgr to commit the changes to the routers and reboot them.')
+
+endconfig.add_argument("--dry-run", action='store_true', help='This argument MUST be used before PROFILE,\
+    it is here to "end" the config so that any parameters using 1 or more values wont include profile and IP\
+    and tells mrtmgr to not commit the changes and just print out the commands.')
 
 # Parse all the arguments
 args = parser.parse_args()
@@ -118,12 +123,22 @@ args = parser.parse_args()
 ssh_baseargs = "ssh -oStrictHostKeyChecking=no -oBatchMode=yes -i ~/.ssh/id_rsa.router admin@192.168.1.1 "
 commands = []
 
+if not args.commit and not args.dry_run:
+    print('Missing the --commit or --dry-run argument at the end of the "optional" arguments.')
+    exit()
+
+elif args.commit and args.dry_run:
+    print('Please only use --commit or --dry-run, they cannot be used together!')
+    exit()
+
 
 if args.ssid:
     commands.append(libmrt.wifi.set_SSID(args))
 
+
 if args.wpa_psk:
     commands.append(libmrt.wifi.set_psk(args))
+
 
 if args.auth:
     commands.append(libmrt.wifi.set_auth(args))
