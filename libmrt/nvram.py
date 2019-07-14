@@ -7,6 +7,7 @@ def commit(ssh_baseargs):
     # Run the command
     Popen(ssh_command)
 
+
 def rt_exec(ssh_baseargs, commands):
     # Join the list of commands by " ; " making it more readable and also chain them together
     ssh_args = ' ; '.join(commands)
@@ -14,3 +15,12 @@ def rt_exec(ssh_baseargs, commands):
     ssh_command = shlex.split(ssh_baseargs + '"' + ssh_args + '"')
     # Run the command(s)
     Popen(ssh_command)
+
+
+def dry_run(ssh_baseargs, commands):
+    # Join the list of commands by " ; " making it more readable and also chain them together
+    ssh_args = ' ; '.join(commands)
+    # Convert the command(s) to something popen will accept
+    ssh_command = ssh_baseargs + '"' + ssh_args + '"'
+    # Run the command(s)
+    print(ssh_command)
