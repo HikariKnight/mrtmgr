@@ -5,7 +5,6 @@ import os
 import sys
 import shlex
 import configparser
-from subprocess import Popen
 import libmrt
 
 sys.path.append('libmrt')
@@ -17,6 +16,10 @@ settingsFile = confPath + "/mrtmgr.conf"
 if not os.path.exists(settingsFile):
     confPath = "/etc/mrtmgr"
     settingsFile = confPath + "/mrtmgr.conf"
+
+# Read the config file
+config = configparser.ConfigParser()
+config.read(settingsFile)
 
 # Setup script parameters
 parser = argparse.ArgumentParser()
@@ -63,11 +66,14 @@ security = parser.add_argument_group("Security", "Lets you edit and update secur
     details like user login and password for the WebUI, ports and ssh-keys.\
     Most routers only supports ssh-keys using rsa2048 or rsa4096.")
 
+
+## Turns out this is not supported on all routers or rather some routers encrypt this information,
+#  making it not possible to change this reliably across different brands.
 # Change username
-security.add_argument("--user", help="Change the routers WebUI username.")
+#security.add_argument("--user", help="Change the routers WebUI username.")
 
 # Change password
-security.add_argument("--password", help="Change the routers WebUI password.")
+#security.add_argument("--password", help="Change the routers WebUI password.")
 
 # Change authenticated ssh-key
 security.add_argument("--ssh-key", help="Change the public key stored in the nvram that is used to \
@@ -99,9 +105,14 @@ tuning.add_argument("--rssi", metavar="dBm",
 args = parser.parse_args()
 
 # Prepare our command
-ssh_basecommand = "ssh -oStrictHostKeyChecking=no -oBatchMode=yes -p $PORT $USER@$HOST "
+#ssh_baseargs = "-oStrictHostKeyChecking=no -oBatchMode=yes -i ~/.ssh/id_rsa.router -p $PORT $USER@$HOST "
+
+# Test command
+ssh_baseargs = "ssh -oStrictHostKeyChecking=no -oBatchMode=yes -i ~/.ssh/id_rsa.router admin@192.168.1.1 "
 commands = []
 
 
 if args.ssid:
-    libmrt.ssid.set_SSID(args)
+    commands.append(libmrt.ssid.set_SSID(args))
+
+libmrt.nvram.rt_exec(ssh_baseargs,commands)
