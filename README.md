@@ -17,11 +17,16 @@ All we care about is having a single SSID+wifi password for the whole building w
 This project is a work in progress but here are some of the known requirements and features that I know that I will be trying to code into the project.
 <br>
 
+### Features
+* [X] Change key router settings like: WPA-PSK, WPA2-PSK, SSID
+* [X] Change wireless password
+* [X] Update ssh public key (incase you need to change it)
+* [X] Change roaming assistant settings (if router supports it)
+* [X] Change WebUI port (http and https, but seriously move over to https!)
+* [X] Custom router/model profiles (conf files?) to support nvram settings for routers I have not personally tested
+
+
 ### Planned *potential* features
-* Change key router settings like: WPA-PSK, WPA2-PSK, SSID
-* Update ssh public key (incase you need to change it)
-* Change roaming assistant settings (if router supports it)
-* Custom router/model profiles (conf files?) to support nvram settings for routers I have not personally tested
 * Sync settings from main router (essentially bandwagon on the main routers WebUI?)
 * Custom nvram commands?
 * Automatic profile detection (if possible)
@@ -41,3 +46,4 @@ Note: This tool is designed to be run from a Raspberry Pi or a Linux system
   * shlex
   * argparse
   * subprocess
+  * re
