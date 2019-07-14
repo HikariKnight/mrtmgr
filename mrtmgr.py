@@ -26,8 +26,8 @@ parser = argparse.ArgumentParser()
 
 # Add profiles argument
 parser.add_argument("profile", metavar="profile", nargs=1, help='Name of the nvram profile (.conf) from "' + confPath + '/profiles/" to use.')
-parser.add_argument("address", metavar='IPs|hostnames|file="filename"', nargs="+",
-    help='A space separated list of IPs or hostnames for the routers. \
+parser.add_argument("address", metavar='IP|hostname|file="filename"', nargs=1,
+    help='The IP or hostname for the router. \
     Alternatively you can add all the IPs/hostnames on separate lines into a file and just pass file="filename.list"')
 
 # Make a group for wireless settings
@@ -51,7 +51,7 @@ wifi.add_argument("--auth", metavar="psk|psk2",
     help="Update the authentication method for the wireless network(s).\
         psk = WPA-PSK, \
         psk2 = WPA2-PSK.",
-    nargs="+")
+    nargs=1)
 
 # Channel settings
 wifi.add_argument("--channel", metavar="channel",
@@ -101,6 +101,13 @@ tuning.add_argument("--rssi", metavar="dBm",
         so they can reconnect to a closer node. NOTE: Change this only if you know what you are doing!",
         type=int)
 
+endconfig = parser.add_argument_group("End config", "Signify you are ending the configuration here.\
+    (This is a workaround to stop the arguments taking 1 or more option from thinking profile and IP is\
+    part of its own options)")
+
+endconfig.add_argument("--for", action='store_true', help='This argument MUST be used before PROFILE,\
+    it is here to "end" the config so that any parameters using 1 or more values wont include profile and IP')
+
 # Parse all the arguments
 args = parser.parse_args()
 
@@ -113,6 +120,15 @@ commands = []
 
 
 if args.ssid:
-    commands.append(libmrt.ssid.set_SSID(args))
+    commands.append(libmrt.wifi.set_SSID(args))
 
-libmrt.nvram.rt_exec(ssh_baseargs,commands)
+if args.wpa_psk:
+    commands.append(libmrt.wifi.set_psk(args))
+
+if args.auth:
+    commands.append(libmrt.wifi.set_auth(args))
+
+
+# Print is here for now to just see if commands get combined properly
+print(" ; ".join(commands))
+#libmrt.nvram.rt_exec(ssh_baseargs,commands)
