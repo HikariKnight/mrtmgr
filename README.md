@@ -1,4 +1,4 @@
-# Mesh RouTer ManaGeR (Work in Progress!)
+# Mesh RouTer ManaGeR
 A commandline tool to manage several different vendor routers in AP(Access Point) mode through ssh with private key authentication and make them act close to a mesh network over an ethernet/wired backhaul, thus avoiding vendor locking yourself.
 <br>
 <br>
@@ -47,3 +47,15 @@ Note: This tool is designed to be run from a Raspberry Pi or a Linux system
   * argparse
   * subprocess
   * re
+
+## Make a system package for a package manager?
+If you want this tool to run in a system level then just move all the files to /opt/mrtmgr then **_move_** the folders "groups" and "profiles" and the file mrtmgr.conf to /etc/mrtmgr
+
+Finally symlink /opt/mrtmgr/mrtmgr to /usr/local/mrtmgr or for a package for a package manager symlink it to /usr/bin/mrtmgr
+
+
+# How can I contribute?
+Fork the project and do changes and open a pull request.<br>
+However simply making a profile for other routers alone is a HUGE help in itself!
+
+All you have to do is ssh into your router and run "nvram show" and look for the changes you have done in the WebUI once you have saved them and compare them and just add the key names (the name before the = in the settings) to a .conf file (look at the [rt66u.conf](https://github.com/HikariKnight/mrtmgr/blob/develop/profiles/rt66u.conf) and [dir879_dd-wrt.conf](https://github.com/HikariKnight/mrtmgr/blob/develop/profiles/dir879_dd-wrt.conf) as examples)
