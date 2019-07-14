@@ -1,7 +1,11 @@
-def set_SSID(args):
-    # Fake profile
-    ssid_key = "wl0_ssid,wl1_ssid,dummy"
-    nvram_bin = "/usr/sbin/nvram"
+def set_SSID(args, profile):
+    # Load profile info
+    ssid_key = profile['nvram'].get('ssid_keys',None)
+    nvram_bin = profile['router'].get('nvram_bin','/usr/sbin/nvram')
+
+    if not ssid_key:
+        print("Error: Profile has no value in 'ssid_keys'")
+        exit()
 
     keys = []
     if ',' in ssid_key:
@@ -36,10 +40,14 @@ def set_SSID(args):
     else:
         return command[0]
 
-def set_psk(args):
-    # Fake profile for testing
-    wpa_psk_key = "wl0_wpa_psk,wl1_wpa_psk"
-    nvram_bin = "/usr/sbin/nvram"
+def set_psk(args, profile):
+    # Load profile info
+    wpa_psk_key = profile['nvram'].get('wpa_psk_keys',None)
+    nvram_bin = profile['router'].get('nvram_bin','/usr/sbin/nvram')
+
+    if not wpa_psk_key:
+        print("Error: Profile has no value in 'wpa_psk_keys'")
+        exit()
 
     keys = []
     if ',' in wpa_psk_key:
@@ -111,10 +119,14 @@ def set_channel(args):
     else:
         return command[0] """
 
-def set_auth(args):
-    # Fake profile for testing
-    auth_mode_key = "wl0_auth_mode_x,wl0_akm,wl1_auth_mode_x,wl1_akm,wl_auth_mode_x,wl_akm"
-    nvram_bin = "/usr/sbin/nvram"
+def set_auth(args, profile):
+    # Load profile info
+    auth_mode_key = profile['nvram'].get('auth_mode_keys',None)
+    nvram_bin = profile['router'].get('nvram_bin','/usr/sbin/nvram')
+
+    if not auth_mode_key:
+        print("Error: Profile has no value in 'auth_mode_keys'")
+        exit()
 
     keys = []
     if ',' in auth_mode_key:
