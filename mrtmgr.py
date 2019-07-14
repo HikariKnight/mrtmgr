@@ -86,10 +86,12 @@ security.add_argument("--add-ssh-key", metavar="SSH_KEY",
 
 # Change http port
 security.add_argument("--http-port", help="Change the http port used for the router's WebUI, \
-    but seriously move over to https already!")
+    but seriously move over to https already!",
+    type=int)
 
 # Change https port
-security.add_argument("--https-port", help="Change the https port used for the router's WebUI.")
+security.add_argument("--https-port", help="Change the https port used for the router's WebUI.",
+    type=int)
 
 
 # Make a tuning group
@@ -145,6 +147,10 @@ if args.auth:
 if args.rssi:
     commands.append(libmrt.rssi.set_RSSI(args))
 
+if args.http_port:
+    commands.append(libmrt.webui.set_http_port(args))
+if args.https_port:
+    commands.append(libmrt.webui.set_https_port(args))
 
 # Print is here for now to just see if commands get combined properly
 print(" ; ".join(commands))
