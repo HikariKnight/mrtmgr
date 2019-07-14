@@ -59,3 +59,15 @@ Fork the project and do changes and open a pull request.<br>
 However simply making a profile for other routers alone is a HUGE help in itself!
 
 All you have to do is ssh into your router and run "nvram show" and look for the changes you have done in the WebUI once you have saved them and compare them and just add the key names (the name before the = in the settings) to a .conf file (look at the [rt66u.conf](https://github.com/HikariKnight/mrtmgr/blob/develop/profiles/rt66u.conf) and [dir879_dd-wrt.conf](https://github.com/HikariKnight/mrtmgr/blob/develop/profiles/dir879_dd-wrt.conf) as examples)
+
+# How can I support you?
+You could support me with the following links below
+<br>
+
+[![Donate](https://img.shields.io/badge/Support_me_on-Patreon-green.svg)](https://www.patreon.com/HikariKnight) (monthly)
+
+<br>
+
+However if you prefer a single donation you can do that through PayPal
+
+[![Donate with PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4YAU4MPDT8ZJQ)
