@@ -6,6 +6,7 @@ import sys
 import shlex
 import configparser
 import libmrt
+import re
 
 sys.path.append('libmrt')
 
@@ -152,8 +153,24 @@ if args.https_port:
 if args.ssh_key:
     commands.append(libmrt.sshd.set_ssh_key(args,profile))
 
-if args.dry_run:
-    libmrt.nvram.dry_run(ssh_baseargs,commands)
+ssh_basecmd = ''
 
-if args.commit:
-    libmrt.nvram.rt_exec(ssh_baseargs,commands)
+if "group=" in args.address[0]:
+    regex = re.compile("group=")
+    group = regex.sub("",args.address[0])
+    
+    with open(confPath + '/groups/' + group + '.list') as addresses:
+        for address in addresses:
+            ssh_basecmd = ssh_baseargs + address.rstrip() + ' '
+            if args.dry_run:
+                libmrt.nvram.dry_run(ssh_basecmd, commands, profile)
+
+            if args.commit:
+                libmrt.nvram.rt_exec(ssh_basecmd, commands, profile)
+else:
+    ssh_basecmd = ssh_baseargs + args.address[0] + ' '
+    if args.dry_run:
+        libmrt.nvram.dry_run(ssh_basecmd, commands, profile)
+
+    if args.commit:
+        libmrt.nvram.rt_exec(ssh_basecmd, commands, profile)
