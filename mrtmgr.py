@@ -26,9 +26,10 @@ parser = argparse.ArgumentParser()
 
 # Add profiles argument
 parser.add_argument("profile", metavar="profile", nargs=1, help='Name of the nvram profile (.conf) from "' + confPath + '/profiles/" to use.')
-parser.add_argument("address", metavar='IP|hostname|file="filename"', nargs=1,
+parser.add_argument("address", metavar='IP|hostname|group="filename"', nargs=1,
     help='The IP or hostname for the router. \
-    Alternatively you can add all the IPs/hostnames on separate lines into a file and just pass file="filename.list"')
+    Alternatively you can add all the IPs/hostnames on separate lines into a file and just pass group="filename".\
+    The file is fetched from a .list file in "' + confPath + '/groups" with the same name you provide.')
 
 # Make a group for wireless settings
 wifi = parser.add_argument_group("Wireless", "Each parameter can take one or more argument, \
@@ -65,15 +66,6 @@ wifi.add_argument("--auth", metavar="psk|psk2",
 security = parser.add_argument_group("Security", "Lets you edit and update security \
     details like user login and password for the WebUI, ports and ssh-keys.\
     Most routers only supports ssh-keys using rsa2048 or rsa4096.")
-
-
-## Turns out this is not supported on all routers or rather some routers encrypt this information,
-#  making it not possible to change this reliably across different brands.
-# Change username
-#security.add_argument("--user", help="Change the routers WebUI username.")
-
-# Change password
-#security.add_argument("--password", help="Change the routers WebUI password.")
 
 # Change authenticated ssh-key
 security.add_argument("--ssh-key", help="Change the public key stored in the nvram that is used to \
@@ -118,11 +110,17 @@ endconfig.add_argument("--dry-run", action='store_true', help='This argument MUS
 # Parse all the arguments
 args = parser.parse_args()
 
-# Prepare our command
-#ssh_baseargs = "-oStrictHostKeyChecking=no -oBatchMode=yes -i ~/.ssh/id_rsa.router -p $PORT $USER@$HOST "
+profile = libmrt.profile.load(confPath,args.profile)
 
-# Test command
-ssh_baseargs = "ssh -oStrictHostKeyChecking=no -oBatchMode=yes -i ~/.ssh/id_rsa.router admin@192.168.1.1 "
+# Check if we are going to have strict key checks in ssh (enable for production!)
+strict_checks = ''
+if config["ssh"].getboolean("strict_checks"):
+    strict_checks = "-oStrictHostKeyChecking=yes"
+else:
+    strict_checks = "-oStrictHostKeyChecking=no"
+
+# Prepare our command
+ssh_baseargs = 'ssh ' + strict_checks + ' -oBatchMode=yes -i "' + config["ssh"]["privkey_file"] + '" ' + profile['router']['user'] + '@'
 commands = []
 
 if not args.commit and not args.dry_run:
@@ -134,28 +132,28 @@ elif args.commit and args.dry_run:
 
 
 if args.ssid:
-    commands.append(libmrt.wifi.set_SSID(args))
-
+    commands.append(libmrt.wifi.set_SSID(args,profile))
 
 if args.wpa_psk:
-    commands.append(libmrt.wifi.set_psk(args))
-
+    commands.append(libmrt.wifi.set_psk(args,profile))
 
 if args.auth:
-    commands.append(libmrt.wifi.set_auth(args))
+    commands.append(libmrt.wifi.set_auth(args,profile))
 
 if args.rssi:
-    commands.append(libmrt.rssi.set_RSSI(args))
+    commands.append(libmrt.rssi.set_RSSI(args,profile))
 
 if args.http_port:
-    commands.append(libmrt.webui.set_http_port(args))
+    commands.append(libmrt.webui.set_http_port(args,profile))
 
 if args.https_port:
-    commands.append(libmrt.webui.set_https_port(args))
+    commands.append(libmrt.webui.set_https_port(args,profile))
 
 if args.ssh_key:
-    commands.append(libmrt.sshd.set_ssh_key(args))
+    commands.append(libmrt.sshd.set_ssh_key(args,profile))
 
-# Print is here for now to just see if commands get combined properly
-print(" ; ".join(commands))
-#libmrt.nvram.rt_exec(ssh_baseargs,commands)
+if args.dry_run:
+    libmrt.nvram.dry_run(ssh_baseargs,commands)
+
+if args.commit:
+    libmrt.nvram.rt_exec(ssh_baseargs,commands)

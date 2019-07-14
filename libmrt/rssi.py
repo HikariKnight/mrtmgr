@@ -1,7 +1,11 @@
-def set_RSSI(args):
-    # Fake profile
-    rssi_key = "wl_user_rssi,wl0_user_rssi,wl1_user_rssi"
-    nvram_bin = "/usr/sbin/nvram"
+def set_RSSI(args, profile):
+    # Load profile info
+    rssi_key = profile['nvram'].get('roam_assist_keys',None)
+    nvram_bin = profile['router'].get('nvram_bin','/usr/sbin/nvram')
+
+    if not rssi_key:
+        print("Error: Profile has no value in 'roam_assist_keys' or function is unsupported!")
+        exit()
 
     keys = []
     if ',' in rssi_key:
