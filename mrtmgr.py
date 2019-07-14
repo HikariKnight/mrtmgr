@@ -54,12 +54,12 @@ wifi.add_argument("--auth", metavar="psk|psk2",
     nargs=1)
 
 # Channel settings
-wifi.add_argument("--channel", metavar="channel",
-    help="Update the prefered channel to use for the bands, the default is 0, \
-        however this setting is recommended to set in the routers WebUI or leave at auto. 0 = auto",
-    nargs="+",
-    type=int,
-    default="0")
+#wifi.add_argument("--channel", metavar="channel",
+#    help="Update the prefered channel to use for the bands, the default is 0, \
+#        however this setting is recommended to set in the routers WebUI or leave at auto. 0 = auto",
+#    nargs="+",
+#    type=int,
+#    default="0")
 
 # Make a security group
 security = parser.add_argument_group("Security", "Lets you edit and update security \
