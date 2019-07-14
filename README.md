@@ -17,6 +17,22 @@ All we care about is having a single SSID+wifi password for the whole building w
 This project is a work in progress but here are some of the known requirements and features that I know that I will be trying to code into the project.
 <br>
 
+## Usage
+In order for this tool to work, you first need to make yourself an ssh-rsa private key, preferably rsa2048 or rsa4096, whichever your routers support. Then add that public key to your routers authorized keys in the Router WebUI.
+Finally tell mrtmgr where it can find the private key in mrtmgr.conf and the utility can do changes to the routers from there on if it has a compatible profile for the routers.
+
+Out of the box, there are profiles for the Asus RT-AC66U (stock firmware) and the D-Link DIR-879 (DD-WRT firmware), but you can easily write your own by doing changes in your router's WebUI and then look for those changes in the routers nvram once with "nvram show" in the routers command line and write your own profile config.
+
+You can then just call the utility using a command like this for a single router
+```
+./mrtmgr --ssid 2.4ghz_wifi 5ghz_wifi --wpa-psk supersecret supersecret5ghz --commit rt66u 192.168.1.1
+```
+
+Or this for a group of routers (where it will fetch the ip addresses from a rt66u.list file in the groups folder)
+```
+./mrtmgr --ssid 2.4ghz_wifi 5ghz_wifi --wpa-psk supersecret supersecret5ghz --commit rt66u group=rt66u
+```
+
 ### Features
 * [X] Change key router settings like: WPA-PSK, WPA2-PSK, SSID
 * [X] Change wireless password
