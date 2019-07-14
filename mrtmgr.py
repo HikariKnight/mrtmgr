@@ -81,8 +81,8 @@ security.add_argument("--ssh-key", help="Change the public key stored in the nvr
     WARNING: Will replace all existing keys!")
 
 # Add ssh-key
-security.add_argument("--add-ssh-key", metavar="SSH_KEY",
-    help="Add a new ssh-key without removing old ones.")
+#security.add_argument("--add-ssh-key", metavar="SSH_KEY",
+#    help="Add a new ssh-key without removing old ones.")
 
 # Change http port
 security.add_argument("--http-port", help="Change the http port used for the router's WebUI, \
@@ -149,6 +149,7 @@ if args.rssi:
 
 if args.http_port:
     commands.append(libmrt.webui.set_http_port(args))
+
 if args.https_port:
     commands.append(libmrt.webui.set_https_port(args))
 
