@@ -99,7 +99,7 @@ tuning = parser.add_argument_group("Tuning", "Lets you tune supported routers RS
 tuning.add_argument("--rssi", metavar="dBm",
     help="Sets the dBm threshold for when to kick clients off the routers wireless network \
         so they can reconnect to a closer node. NOTE: Change this only if you know what you are doing!",
-        type=int)
+        type=int, nargs="+")
 
 endconfig = parser.add_argument_group("End config", "Signify you are ending the configuration here.\
     (This is a workaround to stop the arguments taking 1 or more option from thinking profile and IP is\
@@ -141,6 +141,9 @@ if args.wpa_psk:
 
 if args.auth:
     commands.append(libmrt.wifi.set_auth(args))
+
+if args.rssi:
+    commands.append(libmrt.rssi.set_RSSI(args))
 
 
 # Print is here for now to just see if commands get combined properly
