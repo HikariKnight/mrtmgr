@@ -6,6 +6,7 @@ import sys
 import shlex
 import configparser
 import libmrt
+import re
 
 sys.path.append('libmrt')
 
@@ -26,9 +27,10 @@ parser = argparse.ArgumentParser()
 
 # Add profiles argument
 parser.add_argument("profile", metavar="profile", nargs=1, help='Name of the nvram profile (.conf) from "' + confPath + '/profiles/" to use.')
-parser.add_argument("address", metavar='IPs|hostnames|file="filename"', nargs="+",
-    help='A space separated list of IPs or hostnames for the routers. \
-    Alternatively you can add all the IPs/hostnames on separate lines into a file and just pass file="filename.list"')
+parser.add_argument("address", metavar='IP|hostname|group="filename"', nargs=1,
+    help='The IP or hostname for the router. \
+    Alternatively you can add all the IPs/hostnames on separate lines into a file and just pass group="filename".\
+    The file is fetched from a .list file in "' + confPath + '/groups" with the same name you provide.')
 
 # Make a group for wireless settings
 wifi = parser.add_argument_group("Wireless", "Each parameter can take one or more argument, \
@@ -51,29 +53,20 @@ wifi.add_argument("--auth", metavar="psk|psk2",
     help="Update the authentication method for the wireless network(s).\
         psk = WPA-PSK, \
         psk2 = WPA2-PSK.",
-    nargs="+")
+    nargs=1)
 
 # Channel settings
-wifi.add_argument("--channel", metavar="channel",
-    help="Update the prefered channel to use for the bands, the default is 0, \
-        however this setting is recommended to set in the routers WebUI or leave at auto. 0 = auto",
-    nargs="+",
-    type=int,
-    default="0")
+#wifi.add_argument("--channel", metavar="channel",
+#    help="Update the prefered channel to use for the bands, the default is 0, \
+#        however this setting is recommended to set in the routers WebUI or leave at auto. 0 = auto",
+#    nargs="+",
+#    type=int,
+#    default="0")
 
 # Make a security group
 security = parser.add_argument_group("Security", "Lets you edit and update security \
     details like user login and password for the WebUI, ports and ssh-keys.\
     Most routers only supports ssh-keys using rsa2048 or rsa4096.")
-
-
-## Turns out this is not supported on all routers or rather some routers encrypt this information,
-#  making it not possible to change this reliably across different brands.
-# Change username
-#security.add_argument("--user", help="Change the routers WebUI username.")
-
-# Change password
-#security.add_argument("--password", help="Change the routers WebUI password.")
 
 # Change authenticated ssh-key
 security.add_argument("--ssh-key", help="Change the public key stored in the nvram that is used to \
@@ -81,15 +74,17 @@ security.add_argument("--ssh-key", help="Change the public key stored in the nvr
     WARNING: Will replace all existing keys!")
 
 # Add ssh-key
-security.add_argument("--add-ssh-key", metavar="SSH_KEY",
-    help="Add a new ssh-key without removing old ones.")
+#security.add_argument("--add-ssh-key", metavar="SSH_KEY",
+#    help="Add a new ssh-key without removing old ones.")
 
 # Change http port
 security.add_argument("--http-port", help="Change the http port used for the router's WebUI, \
-    but seriously move over to https already!")
+    but seriously move over to https already!",
+    type=int)
 
 # Change https port
-security.add_argument("--https-port", help="Change the https port used for the router's WebUI.")
+security.add_argument("--https-port", help="Change the https port used for the router's WebUI.",
+    type=int)
 
 
 # Make a tuning group
@@ -99,20 +94,83 @@ tuning = parser.add_argument_group("Tuning", "Lets you tune supported routers RS
 tuning.add_argument("--rssi", metavar="dBm",
     help="Sets the dBm threshold for when to kick clients off the routers wireless network \
         so they can reconnect to a closer node. NOTE: Change this only if you know what you are doing!",
-        type=int)
+        type=int, nargs="+")
+
+endconfig = parser.add_argument_group("End config", "Signify you are ending the configuration here.\
+    (This is a workaround to stop the arguments taking 1 or more option from thinking profile and IP is\
+    part of its own options)")
+
+endconfig.add_argument("--commit", action='store_true', help='This argument MUST be used before PROFILE,\
+    it is here to "end" the config so that any parameters using 1 or more values wont include profile and IP\
+    and tells mrtmgr to commit the changes to the routers and reboot them.')
+
+endconfig.add_argument("--dry-run", action='store_true', help='This argument MUST be used before PROFILE,\
+    it is here to "end" the config so that any parameters using 1 or more values wont include profile and IP\
+    and tells mrtmgr to not commit the changes and just print out the commands.')
 
 # Parse all the arguments
 args = parser.parse_args()
 
-# Prepare our command
-#ssh_baseargs = "-oStrictHostKeyChecking=no -oBatchMode=yes -i ~/.ssh/id_rsa.router -p $PORT $USER@$HOST "
+profile = libmrt.profile.load(confPath,args.profile)
 
-# Test command
-ssh_baseargs = "ssh -oStrictHostKeyChecking=no -oBatchMode=yes -i ~/.ssh/id_rsa.router admin@192.168.1.1 "
+# Check if we are going to have strict key checks in ssh (enable for production!)
+strict_checks = ''
+if config["ssh"].getboolean("strict_checks"):
+    strict_checks = "-oStrictHostKeyChecking=yes"
+else:
+    strict_checks = "-oStrictHostKeyChecking=no"
+
+# Prepare our command
+ssh_baseargs = 'ssh ' + strict_checks + ' -oBatchMode=yes -i "' + config["ssh"]["privkey_file"] + '" ' + profile['router']['user'] + '@'
 commands = []
+
+if not args.commit and not args.dry_run:
+    print('Missing the --commit or --dry-run argument at the end of the "optional" arguments.')
+    exit()
+elif args.commit and args.dry_run:
+    print('Please only use --commit or --dry-run, they cannot be used together!')
+    exit()
 
 
 if args.ssid:
-    commands.append(libmrt.ssid.set_SSID(args))
+    commands.append(libmrt.wifi.set_SSID(args,profile))
 
-libmrt.nvram.rt_exec(ssh_baseargs,commands)
+if args.wpa_psk:
+    commands.append(libmrt.wifi.set_psk(args,profile))
+
+if args.auth:
+    commands.append(libmrt.wifi.set_auth(args,profile))
+
+if args.rssi:
+    commands.append(libmrt.rssi.set_RSSI(args,profile))
+
+if args.http_port:
+    commands.append(libmrt.webui.set_http_port(args,profile))
+
+if args.https_port:
+    commands.append(libmrt.webui.set_https_port(args,profile))
+
+if args.ssh_key:
+    commands.append(libmrt.sshd.set_ssh_key(args,profile))
+
+ssh_basecmd = ''
+
+if "group=" in args.address[0]:
+    regex = re.compile("group=")
+    group = regex.sub("",args.address[0])
+    
+    with open(confPath + '/groups/' + group + '.list') as addresses:
+        for address in addresses:
+            ssh_basecmd = ssh_baseargs + address.rstrip() + ' '
+            if args.dry_run:
+                libmrt.nvram.dry_run(ssh_basecmd, commands, profile)
+
+            if args.commit:
+                libmrt.nvram.rt_exec(ssh_basecmd, commands, profile)
+else:
+    ssh_basecmd = ssh_baseargs + args.address[0] + ' '
+    if args.dry_run:
+        libmrt.nvram.dry_run(ssh_basecmd, commands, profile)
+
+    if args.commit:
+        libmrt.nvram.rt_exec(ssh_basecmd, commands, profile)

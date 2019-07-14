@@ -1,16 +1,27 @@
 from subprocess import Popen
 import shlex
 
-def commit(ssh_baseargs):
-    # Convert the command to something accepted by popen
-    ssh_command = shlex.split(ssh_baseargs + '"/usr/sbin/nvram show"')
-    # Run the command
+def _commit(ssh_command):
+    # Commit the changes to the router
     Popen(ssh_command)
 
-def rt_exec(ssh_baseargs, commands):
-    # Join the list of commands by " ; " making it more readable and also chain them together
-    ssh_args = ' ; '.join(commands)
-    # Convert the command(s) to something popen will accept
-    ssh_command = shlex.split(ssh_baseargs + '"' + ssh_args + '"')
+
+def rt_exec(ssh_basecmd, commands, profile):
+    # Combine the ssh command with shlex to make it popen compatible
+    ssh_command = shlex.split(_combineCmd(ssh_basecmd, commands, profile))
     # Run the command(s)
-    Popen(ssh_command)
+    _commit(ssh_command)
+
+
+def dry_run(ssh_basecmd, commands, profile):
+    ssh_command = _combineCmd(ssh_basecmd, commands, profile)
+    # Run the command(s)
+    print(ssh_command)
+
+def _combineCmd(ssh_basecmd, commands, profile):
+    # Load profile
+    nvram_bin = profile['router'].get('nvram_bin','/usr/sbin/nvram')
+    
+    # Combine the commands
+    ssh_args = ' ; '.join(commands)
+    return ssh_basecmd + '"' + ssh_args + ' ; ' + nvram_bin + ' commit ; /sbin/reboot"' 

@@ -1,4 +1,4 @@
-# Mesh RouTer ManaGeR (Work in Progress!)
+# Mesh RouTer ManaGeR
 A commandline tool to manage several different vendor routers in AP(Access Point) mode through ssh with private key authentication and make them act close to a mesh network over an ethernet/wired backhaul, thus avoiding vendor locking yourself.
 <br>
 <br>
@@ -17,11 +17,16 @@ All we care about is having a single SSID+wifi password for the whole building w
 This project is a work in progress but here are some of the known requirements and features that I know that I will be trying to code into the project.
 <br>
 
+### Features
+* [X] Change key router settings like: WPA-PSK, WPA2-PSK, SSID
+* [X] Change wireless password
+* [X] Update ssh public key (incase you need to change it)
+* [X] Change roaming assistant settings (if router supports it)
+* [X] Change WebUI port (http and https, but seriously move over to https!)
+* [X] Custom router/model profiles (conf files?) to support nvram settings for routers I have not personally tested
+
+
 ### Planned *potential* features
-* Change key router settings like: WPA-PSK, WPA2-PSK, SSID
-* Update ssh public key (incase you need to change it)
-* Change roaming assistant settings (if router supports it)
-* Custom router/model profiles (conf files?) to support nvram settings for routers I have not personally tested
 * Sync settings from main router (essentially bandwagon on the main routers WebUI?)
 * Custom nvram commands?
 * Automatic profile detection (if possible)
@@ -41,3 +46,16 @@ Note: This tool is designed to be run from a Raspberry Pi or a Linux system
   * shlex
   * argparse
   * subprocess
+  * re
+
+## Make a system package for a package manager?
+If you want this tool to run in a system level then just move all the files to /opt/mrtmgr then **_move_** the folders "groups" and "profiles" and the file mrtmgr.conf to /etc/mrtmgr
+
+Finally symlink /opt/mrtmgr/mrtmgr to /usr/local/mrtmgr or for a package for a package manager symlink it to /usr/bin/mrtmgr
+
+
+# How can I contribute?
+Fork the project and do changes and open a pull request.<br>
+However simply making a profile for other routers alone is a HUGE help in itself!
+
+All you have to do is ssh into your router and run "nvram show" and look for the changes you have done in the WebUI once you have saved them and compare them and just add the key names (the name before the = in the settings) to a .conf file (look at the [rt66u.conf](https://github.com/HikariKnight/mrtmgr/blob/develop/profiles/rt66u.conf) and [dir879_dd-wrt.conf](https://github.com/HikariKnight/mrtmgr/blob/develop/profiles/dir879_dd-wrt.conf) as examples)
