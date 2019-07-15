@@ -132,6 +132,7 @@ elif args.commit and args.dry_run:
     exit()
 
 
+# Run the libmrt functions for the arguments passed
 if args.ssid:
     commands.append(libmrt.wifi.set_SSID(args,profile))
 
@@ -152,25 +153,39 @@ if args.https_port:
 
 if args.ssh_key:
     commands.append(libmrt.sshd.set_ssh_key(args,profile))
+# End of argument handling
 
+# Make an empty string before generating the ssh base command
 ssh_basecmd = ''
 
+# If a group list of addresses was passed
 if "group=" in args.address[0]:
-    regex = re.compile("group=")
+    # Remove group= from the beginning of the passed file
+    regex = re.compile("^group=")
     group = regex.sub("",args.address[0])
     
+    # Open the config file and read the addresses
     with open(confPath + '/groups/' + group + '.list') as addresses:
+        # For each line/address
         for address in addresses:
+            # Generate a ssh_base command
             ssh_basecmd = ssh_baseargs + address.rstrip() + ' '
+
+            # If --dry-run was passed, do a dry run and print the commands with no interaction with the routers
             if args.dry_run:
                 libmrt.nvram.dry_run(ssh_basecmd, commands, profile)
 
+            # If --commit was passed do a full run executing the commands on the routers
             if args.commit:
                 libmrt.nvram.rt_exec(ssh_basecmd, commands, profile)
 else:
+    # Generate a single ssh_base command
     ssh_basecmd = ssh_baseargs + args.address[0] + ' '
+
+    # If --dry-run was passed, do a dry run and print the commands with no interaction with the routers
     if args.dry_run:
         libmrt.nvram.dry_run(ssh_basecmd, commands, profile)
 
+    # If --commit was passed do a full run executing the commands on the routers
     if args.commit:
         libmrt.nvram.rt_exec(ssh_basecmd, commands, profile)
