@@ -18,6 +18,7 @@ def dry_run(ssh_basecmd, commands, profile):
     # Run the command(s)
     print(ssh_command)
 
+
 def _combineCmd(ssh_basecmd, commands, profile):
     # Load profile
     nvram_bin = profile['router'].get('nvram_bin','/usr/sbin/nvram')

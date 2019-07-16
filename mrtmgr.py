@@ -56,12 +56,18 @@ wifi.add_argument("--auth", metavar="psk|psk2",
     nargs=1)
 
 # Channel settings
-#wifi.add_argument("--channel", metavar="channel",
-#    help="Update the prefered channel to use for the bands, the default is 0, \
-#        however this setting is recommended to set in the routers WebUI or leave at auto. 0 = auto",
-#    nargs="+",
-#    type=int,
-#    default="0")
+wifi.add_argument("--channel", metavar="channel",
+    help="Update the prefered channel to use for the 2.4Ghz bands, the default is auto, \
+        however this setting is recommended to set in the routers WebUI or leave at auto. \
+        Valid channels are: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13",
+    nargs=1)
+
+# 5Ghz Channel settings
+wifi.add_argument("--channel-5g", metavar="channel",
+    help="Update the prefered channel to use for the 5Ghz bands, the default is auto, \
+        however this setting is recommended to set in the routers WebUI or leave at auto. \
+        Valid channels are (depending on router): 0, 36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 132, 136, 140",
+    nargs=1)
 
 # Make a security group
 security = parser.add_argument_group("Security", "Lets you edit and update security \
@@ -138,6 +144,12 @@ if args.ssid:
 
 if args.wpa_psk:
     commands.append(libmrt.wifi.set_psk(args,profile))
+
+if args.channel:
+    commands.append(libmrt.wifi.set_channel(args,profile))
+
+if args.channel_5g:
+    commands.append(libmrt.wifi.set_channel_5g(args,profile))
 
 if args.auth:
     commands.append(libmrt.wifi.set_auth(args,profile))
