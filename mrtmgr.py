@@ -98,7 +98,12 @@ tuning = parser.add_argument_group("Tuning", "Lets you tune supported routers RS
     automatically kick clients with poor signal off the network so they reconnect to a closer node.")
 
 tuning.add_argument("--rssi", metavar="dBm",
-    help="Sets the dBm threshold for when to kick clients off the routers wireless network \
+    help="Sets the dBm threshold for when to kick clients off the routers 2.4Ghz wireless network \
+        so they can reconnect to a closer node. NOTE: Change this only if you know what you are doing!",
+        type=int, nargs="+")
+
+tuning.add_argument("--rssi-5g", metavar="dBm",
+    help="Sets the dBm threshold for when to kick clients off the routers 5Ghz wireless network \
         so they can reconnect to a closer node. NOTE: Change this only if you know what you are doing!",
         type=int, nargs="+")
 
@@ -156,6 +161,9 @@ if args.auth:
 
 if args.rssi:
     commands.append(libmrt.rssi.set_RSSI(args,profile))
+
+if args.rssi_5g:
+    commands.append(libmrt.rssi.set_RSSI_5G(args,profile))
 
 if args.http_port:
     commands.append(libmrt.webui.set_http_port(args,profile))
