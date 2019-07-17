@@ -221,8 +221,16 @@ else:
 
     # If --dry-run was passed, do a dry run and print the commands with no interaction with the routers
     if args.dry_run:
+        # Print to console that we are doing a dry-run
+        print('the command would have been run to configure ' + args.address[0] + ' if you used --commit')
+
+        # Generate the command and commit it
         libmrt.nvram.dry_run(ssh_basecmd, commands, profile)
 
     # If --commit was passed do a full run executing the commands on the routers
     if args.commit:
+        # Print to console that we are commiting and rebooting the router
+        print('commiting config and rebooting ' + args.address[0])
+
+        # Generate the command and commit it
         libmrt.nvram.rt_exec(ssh_basecmd, commands, profile)
