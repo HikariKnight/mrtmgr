@@ -24,7 +24,7 @@ config.read(settingsFile)
 
 if not config['ssh']['privkey_file']:
     print('There is no private key specified in ' + settingsFile +
-        '\nGenerate one using "ssh-keygen -t rsa -b 2046" (without a passphrase for automation)\n' +
+        '\nGenerate one using "ssh-keygen -t rsa -b 2048" (without a passphrase for automation)\n' +
         'and add its location to the privkey_file property.\n' +
         'Then add your public key to the routers authenticated keys.\n' +
         'You can get the public key using "ssh-keygen -y -f /path/to/private/key"')
