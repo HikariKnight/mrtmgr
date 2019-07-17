@@ -22,6 +22,14 @@ if not os.path.exists(settingsFile):
 config = configparser.ConfigParser()
 config.read(settingsFile)
 
+if not config['ssh']['privkey_file']:
+    print('There is no private key specified in ' + settingsFile +
+        '\nGenerate one using "ssh-keygen -t rsa -b 2046" (without a passphrase for automation)\n' +
+        'and add its location to the privkey_file property.\n' +
+        'Then add your public key to the routers authenticated keys.\n' +
+        'You can get the public key using "ssh-keygen -y -f /path/to/private/key"')
+    exit()
+
 # Setup script parameters
 parser = argparse.ArgumentParser()
 
@@ -91,7 +99,6 @@ security.add_argument("--http-port", help="Change the http port used for the rou
 # Change https port
 security.add_argument("--https-port", help="Change the https port used for the router's WebUI.",
     type=int)
-
 
 # Make a tuning group
 tuning = parser.add_argument_group("Tuning", "Lets you tune supported routers RSSI or Roaming Assist which \
@@ -188,24 +195,49 @@ if "group=" in args.address[0]:
     with open(confPath + '/groups/' + group + '.list') as addresses:
         # For each line/address
         for address in addresses:
+            # Print to console
+            print('Configuring ' + address + '')
+
             # Generate a ssh_base command
             ssh_basecmd = ssh_baseargs + address.rstrip() + ' '
 
             # If --dry-run was passed, do a dry run and print the commands with no interaction with the routers
             if args.dry_run:
+                # Print to console that we are doing a dry-run
+                print('the command would have been run to configure ' + address + ' if you used --commit')
+                
+                # Generate the command and print it
                 libmrt.nvram.dry_run(ssh_basecmd, commands, profile)
+
+                # Print an empty line for spacing
+                print('')
 
             # If --commit was passed do a full run executing the commands on the routers
             if args.commit:
+                # Print to console that we are commiting and rebooting the router
+                print('commiting config and rebooting ' + address)
+
+                # Generate the command and commit it
                 libmrt.nvram.rt_exec(ssh_basecmd, commands, profile)
+
+                # Print an empty line for spacing
+                print('')
 else:
     # Generate a single ssh_base command
     ssh_basecmd = ssh_baseargs + args.address[0] + ' '
 
     # If --dry-run was passed, do a dry run and print the commands with no interaction with the routers
     if args.dry_run:
+        # Print to console that we are doing a dry-run
+        print('the command would have been run to configure ' + args.address[0] + ' if you used --commit')
+
+        # Generate the command and commit it
         libmrt.nvram.dry_run(ssh_basecmd, commands, profile)
 
     # If --commit was passed do a full run executing the commands on the routers
     if args.commit:
+        # Print to console that we are commiting and rebooting the router
+        print('commiting config and rebooting ' + args.address[0])
+
+        # Generate the command and commit it
         libmrt.nvram.rt_exec(ssh_basecmd, commands, profile)

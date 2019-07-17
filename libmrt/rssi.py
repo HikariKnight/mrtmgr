@@ -1,7 +1,10 @@
 def set_RSSI(args, profile):
     # Load profile info
     rssi_key = profile['nvram'].get('roam_assist_keys',None)
-    nvram_bin = profile['router'].get('nvram_bin','/usr/sbin/nvram')
+    nvram_bin = profile['router'].get('nvram_bin','$(which nvram)')
+    PATH_env = profile['router'].get('PATH','/bin:/usr/bin:/sbin:/usr/sbin:/jffs/sbin:' +
+    '/jffs/bin:/jffs/usr/sbin:/jffs/usr/bin:/mmc/sbin:/mmc/bin:/mmc/usr/sbin:/mmc/usr/bin:' +
+    '/opt/sbin:/opt/bin:/opt/usr/sbin:/opt/usr/bin')
 
     # If there is no RSSI key defined, error out
     if not rssi_key:
@@ -37,7 +40,7 @@ def set_RSSI(args, profile):
     # Generate router nvram commands to apply the values
     command = []
     for key,value in zip(keys,values):
-        command.append(nvram_bin + " set " + key + "=" + str(value))
+        command.append(PATH_env + ' ' + nvram_bin + " set " + key + "=" + str(value))
 
     # Put the commands together and return the single command string
     if not len(command) < 1:
@@ -48,7 +51,10 @@ def set_RSSI(args, profile):
 def set_RSSI_5G(args, profile):
     # Load profile info
     rssi_5g_key = profile['nvram'].get('roam_assist_5g_keys',None)
-    nvram_bin = profile['router'].get('nvram_bin','/usr/sbin/nvram')
+    nvram_bin = profile['router'].get('nvram_bin','$(which nvram)')
+    PATH_env = profile['router'].get('PATH','/bin:/usr/bin:/sbin:/usr/sbin:/jffs/sbin:' +
+    '/jffs/bin:/jffs/usr/sbin:/jffs/usr/bin:/mmc/sbin:/mmc/bin:/mmc/usr/sbin:/mmc/usr/bin:' +
+    '/opt/sbin:/opt/bin:/opt/usr/sbin:/opt/usr/bin')
     
     # If there is no RSSI key defined, error out
     if not rssi_5g_key:
@@ -84,7 +90,7 @@ def set_RSSI_5G(args, profile):
     # Generate router nvram commands to apply the values
     command = []
     for key,value in zip(keys,values):
-        command.append(nvram_bin + " set " + key + "=" + str(value))
+        command.append(PATH_env + ' ' + nvram_bin + " set " + key + "=" + str(value))
 
     # Put the commands together and return the single command string
     if not len(command) < 1:

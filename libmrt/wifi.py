@@ -4,7 +4,10 @@ import re
 def set_SSID(args, profile):
     # Load profile info
     ssid_key = profile['nvram'].get('ssid_keys',None)
-    nvram_bin = profile['router'].get('nvram_bin','/usr/sbin/nvram')
+    nvram_bin = profile['router'].get('nvram_bin','$(which nvram)')
+    PATH_env = profile['router'].get('PATH','/bin:/usr/bin:/sbin:/usr/sbin:/jffs/sbin:' +
+    '/jffs/bin:/jffs/usr/sbin:/jffs/usr/bin:/mmc/sbin:/mmc/bin:/mmc/usr/sbin:/mmc/usr/bin:' +
+    '/opt/sbin:/opt/bin:/opt/usr/sbin:/opt/usr/bin')
 
     # If no ssid key is defined then error out and exit
     if not ssid_key:
@@ -40,7 +43,7 @@ def set_SSID(args, profile):
     # Generate router nvram commands to apply the values
     command = []
     for key,value in zip(keys,values):
-        command.append(nvram_bin + " set " + key + "=" + value)
+        command.append('PATH=' + PATH_env + ' ' + nvram_bin + " set " + key + "=" + value)
             
 
     # Put the command together and return the single command string
@@ -53,7 +56,10 @@ def set_SSID(args, profile):
 def set_psk(args, profile):
     # Load profile info
     wpa_psk_key = profile['nvram'].get('wpa_psk_keys',None)
-    nvram_bin = profile['router'].get('nvram_bin','/usr/sbin/nvram')
+    nvram_bin = profile['router'].get('nvram_bin','$(which nvram)')
+    PATH_env = profile['router'].get('PATH','/bin:/usr/bin:/sbin:/usr/sbin:/jffs/sbin:' +
+    '/jffs/bin:/jffs/usr/sbin:/jffs/usr/bin:/mmc/sbin:/mmc/bin:/mmc/usr/sbin:/mmc/usr/bin:' +
+    '/opt/sbin:/opt/bin:/opt/usr/sbin:/opt/usr/bin')
 
     # If no ssid key is defined then error out and exit
     if not wpa_psk_key:
@@ -89,7 +95,7 @@ def set_psk(args, profile):
     # Generate router nvram commands to apply the values
     command = []
     for key,value in zip(keys,values):
-        command.append(nvram_bin + " set " + key + "=" + value)
+        command.append('PATH=' + PATH_env + ' ' + nvram_bin + " set " + key + "=" + value)
 
     # Put the command together and return the single command string
     if not len(command) < 1:
@@ -101,7 +107,10 @@ def set_psk(args, profile):
 def set_channel(args, profile):
     # Load profile info
     channel_key = profile['nvram'].get('channel_2.4g_keys',None)
-    nvram_bin = profile['router'].get('nvram_bin','/usr/sbin/nvram')
+    nvram_bin = profile['router'].get('nvram_bin','$(which nvram)')
+    PATH_env = profile['router'].get('PATH','/bin:/usr/bin:/sbin:/usr/sbin:/jffs/sbin:' +
+    '/jffs/bin:/jffs/usr/sbin:/jffs/usr/bin:/mmc/sbin:/mmc/bin:/mmc/usr/sbin:/mmc/usr/bin:' +
+    '/opt/sbin:/opt/bin:/opt/usr/sbin:/opt/usr/bin')
 
     # If no channel key is defined then error out and exit
     if not channel_key:
@@ -134,7 +143,7 @@ def set_channel(args, profile):
     # Generate router nvram commands to apply the values
     command = []
     for key,value in zip(keys,values):
-        command.append(nvram_bin + " set " + key + "=" + value)
+        command.append('PATH=' + PATH_env + ' ' + nvram_bin + " set " + key + "=" + value)
 
     # Put the command together
     if not len(command) < 1:
@@ -146,7 +155,10 @@ def set_channel(args, profile):
 def set_channel_5g(args, profile):
     # Load profile info
     channel_5g_key = profile['nvram'].get('channel_5g_keys',None)
-    nvram_bin = profile['router'].get('nvram_bin','/usr/sbin/nvram')
+    nvram_bin = profile['router'].get('nvram_bin','$(which nvram)')
+    PATH_env = profile['router'].get('PATH','/bin:/usr/bin:/sbin:/usr/sbin:/jffs/sbin:' +
+    '/jffs/bin:/jffs/usr/sbin:/jffs/usr/bin:/mmc/sbin:/mmc/bin:/mmc/usr/sbin:/mmc/usr/bin:' +
+    '/opt/sbin:/opt/bin:/opt/usr/sbin:/opt/usr/bin')
 
     # If no channel_5g key is defined then error out and exit
     if not channel_5g_key:
@@ -180,7 +192,7 @@ def set_channel_5g(args, profile):
     # Generate router nvram commands to apply the values
     command = []
     for key,value in zip(keys,values):
-        command.append(nvram_bin + " set " + key + "=" + value)
+        command.append('PATH=' + PATH_env + ' ' + nvram_bin + " set " + key + "=" + value)
             
     # Put the command together
     if not len(command) < 1:
@@ -192,7 +204,10 @@ def set_channel_5g(args, profile):
 def set_auth(args, profile):
     # Load profile info
     auth_mode_key = profile['nvram'].get('auth_mode_keys',None)
-    nvram_bin = profile['router'].get('nvram_bin','/usr/sbin/nvram')
+    nvram_bin = profile['router'].get('nvram_bin','$(which nvram)')
+    PATH_env = profile['router'].get('PATH','/bin:/usr/bin:/sbin:/usr/sbin:/jffs/sbin:' +
+    '/jffs/bin:/jffs/usr/sbin:/jffs/usr/bin:/mmc/sbin:/mmc/bin:/mmc/usr/sbin:/mmc/usr/bin:' +
+    '/opt/sbin:/opt/bin:/opt/usr/sbin:/opt/usr/bin')
 
     # If no ssid key is defined then error out and exit
     if not auth_mode_key:
@@ -225,7 +240,7 @@ def set_auth(args, profile):
     # Generate router nvram commands to apply the values
     command = []
     for key,value in zip(keys,values):
-        command.append(nvram_bin + " set " + key + "=" + value)
+        command.append('PATH=' + PATH_env + ' ' + nvram_bin + " set " + key + "=" + value)
 
     # Put the command together and return the single command string
     if not len(command) < 1:
