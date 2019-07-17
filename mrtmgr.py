@@ -22,6 +22,14 @@ if not os.path.exists(settingsFile):
 config = configparser.ConfigParser()
 config.read(settingsFile)
 
+if not config['ssh']['privkey_file']:
+    print('There is no private key specified in ' + settingsFile +
+        '\nGenerate one using "ssh-keygen -t rsa -b 2046" (without a passphrase for automation)\n' +
+        'and add its location to the privkey_file property.\n' +
+        'Then add your public key to the routers authenticated keys.\n' +
+        'You can get the public key using "ssh-keygen -y -f /path/to/private/key"')
+    exit()
+
 # Setup script parameters
 parser = argparse.ArgumentParser()
 
@@ -91,7 +99,6 @@ security.add_argument("--http-port", help="Change the http port used for the rou
 # Change https port
 security.add_argument("--https-port", help="Change the https port used for the router's WebUI.",
     type=int)
-
 
 # Make a tuning group
 tuning = parser.add_argument_group("Tuning", "Lets you tune supported routers RSSI or Roaming Assist which \
