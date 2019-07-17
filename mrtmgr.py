@@ -188,16 +188,33 @@ if "group=" in args.address[0]:
     with open(confPath + '/groups/' + group + '.list') as addresses:
         # For each line/address
         for address in addresses:
+            # Print to console
+            print('Configuring ' + address + '')
+
             # Generate a ssh_base command
             ssh_basecmd = ssh_baseargs + address.rstrip() + ' '
 
             # If --dry-run was passed, do a dry run and print the commands with no interaction with the routers
             if args.dry_run:
+                # Print to console that we are doing a dry-run
+                print('the command would have been run to configure ' + address + ' if you used --commit')
+                
+                # Generate the command and print it
                 libmrt.nvram.dry_run(ssh_basecmd, commands, profile)
+
+                # Print an empty line for spacing
+                print('')
 
             # If --commit was passed do a full run executing the commands on the routers
             if args.commit:
+                # Print to console that we are commiting and rebooting the router
+                print('commiting config and rebooting ' + address)
+
+                # Generate the command and commit it
                 libmrt.nvram.rt_exec(ssh_basecmd, commands, profile)
+
+                # Print an empty line for spacing
+                print('')
 else:
     # Generate a single ssh_base command
     ssh_basecmd = ssh_baseargs + args.address[0] + ' '
