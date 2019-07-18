@@ -48,8 +48,9 @@ wifi = parser.add_argument_group("Wireless", "Each parameter can take one or mor
 
 # SSID
 wifi.add_argument("--ssid", metavar="SSID",
-    help="Update SSID for the wireless network(s)",
-    nargs="+")
+    help="Update SSID for the wireless network(s), if you want to use spaces in the ssid then pass multiple \
+        ssids as separate arguments. Example --ssid my 2.4Ghz network --ssid my 5Ghz network",
+    nargs="+", action='append')
 
 # WPA-PSK
 wifi.add_argument("--wpa-psk", metavar="PSK",

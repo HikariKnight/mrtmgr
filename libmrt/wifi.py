@@ -20,9 +20,23 @@ def set_SSID(args, profile):
         keys = ssid_key.split(',')
     else:
         keys.append(ssid_key)
-    
+
     # Prepare values for the settings
-    param = args.ssid
+    ssid = []
+    param = args.ssid[0]
+
+    # Check to see if we expect SSID with spaces (essentially --ssid was passed more than once)
+    if len(args.ssid) >= 2:
+        # Split our multiple lists
+        for wifiname in args.ssid:
+            # Append to new list and stitch together the ssids with spaces
+            ssid.append(' '.join(wifiname))
+        
+        # Set param to be ssid (emulating old behavior and being backwards compatible)
+        # Thank you argparse for ignoring quotes
+        param = ssid
+    
+    # Pass param to values
     values = param
 
     # Loop through the ssid argument values and append them to the values list
@@ -43,7 +57,7 @@ def set_SSID(args, profile):
     # Generate router nvram commands to apply the values
     command = []
     for key,value in zip(keys,values):
-        command.append('PATH=' + PATH_env + ' ' + nvram_bin + " set " + key + "=" + value)
+        command.append('PATH=' + PATH_env + ' ' + nvram_bin + " set " + key + "='" + value + "'")
             
 
     # Put the command together and return the single command string
@@ -95,7 +109,7 @@ def set_psk(args, profile):
     # Generate router nvram commands to apply the values
     command = []
     for key,value in zip(keys,values):
-        command.append('PATH=' + PATH_env + ' ' + nvram_bin + " set " + key + "=" + value)
+        command.append('PATH=' + PATH_env + ' ' + nvram_bin + " set " + key + "='" + value + "'")
 
     # Put the command together and return the single command string
     if not len(command) < 1:
