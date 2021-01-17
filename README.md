@@ -80,10 +80,8 @@ All you have to do is ssh into your router and run "nvram show" and look for the
 You could support me with the following links below
 <br>
 
-[![Donate](https://img.shields.io/badge/Support_me_on-Patreon-green.svg)](https://www.patreon.com/HikariKnight) (monthly)
+[![Donate](https://img.shields.io/badge/Buy%20me%20a%20drink-Donate-green.svg)](https://ko-fi.com/hikariknight)
 
 <br>
-
-However if you prefer a single donation you can do that through PayPal
 
 [![Donate with PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4YAU4MPDT8ZJQ)
